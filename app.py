@@ -53,28 +53,39 @@ with tab1:
                         st.markdown("### 🧠 Know Your Skills (KYS) – Radar Chart")
 
                         if isinstance(kys_scores, dict) and kys_scores:
-                            st.json(kys_scores)  # Debug display
+                            st.json(kys_scores)  # Debug: show raw values
 
                             try:
-                                labels = list(kys_scores.keys())
-                                values = [int(kys_scores[k]) for k in labels]
+                                labels = []
+                                values = []
 
-                                # Complete the loop
-                                labels += [labels[0]]
-                                values += [values[0]]
-                                angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
-                                angles += angles[:1]
+                                for k, v in kys_scores.items():
+                                    try:
+                                        labels.append(str(k))
+                                        values.append(float(v))
+                                    except Exception as ve:
+                                        st.warning(f"⚠️ Skipping invalid KYS entry: {k} -> {v}")
 
-                                fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
-                                ax.plot(angles, values, color="blue", linewidth=2)
-                                ax.fill(angles, values, color="skyblue", alpha=0.3)
-                                ax.set_xticks(angles[:-1])
-                                ax.set_xticklabels(labels[:-1], fontsize=10)
-                                ax.set_yticks([20, 40, 60, 80, 100])
-                                ax.set_yticklabels(["20", "40", "60", "80", "100"])
-                                ax.set_title("KYS Radar Chart", size=14, weight="bold", pad=20)
+                                if labels and values:
+                                    # Close the loop
+                                    labels += [labels[0]]
+                                    values += [values[0]]
 
-                                st.pyplot(fig)
+                                    angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
+                                    angles += angles[:1]
+
+                                    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+                                    ax.plot(angles, values, color="blue", linewidth=2)
+                                    ax.fill(angles, values, color="skyblue", alpha=0.3)
+                                    ax.set_xticks(angles[:-1])
+                                    ax.set_xticklabels(labels[:-1], fontsize=10)
+                                    ax.set_yticks([20, 40, 60, 80, 100])
+                                    ax.set_yticklabels(["20", "40", "60", "80", "100"])
+                                    ax.set_title("KYS Radar Chart", size=14, weight="bold", pad=20)
+
+                                    st.pyplot(fig)
+                                else:
+                                    st.warning("⚠️ No valid KYS values found for plotting.")
 
                             except Exception as e:
                                 st.error(f"Radar chart generation failed: {e}")
