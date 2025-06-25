@@ -30,9 +30,6 @@ with tab1:
                     if response.status_code == 200:
                         result = response.json()
 
-                        st.subheader("🧪 Raw Response JSON (Debugging Only)")
-                        st.json(result)
-
                         st.success(f"🎯 Resume Score: {result['score']} / 100")
 
                         col1, col2 = st.columns(2)
@@ -67,9 +64,6 @@ with tab1:
                                         continue
 
                         if kys_scores:
-                            st.markdown("#### ✅ Parsed KYS Data")
-                            st.json(kys_scores)
-
                             try:
                                 labels = []
                                 values = []
@@ -89,14 +83,14 @@ with tab1:
                                     values.append(values[0])
                                     angles.append(angles[0])
 
-                                    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+                                    fig, ax = plt.subplots(figsize=(4, 4), subplot_kw=dict(polar=True))
                                     ax.plot(angles, values, color="blue", linewidth=2)
                                     ax.fill(angles, values, color="skyblue", alpha=0.3)
                                     ax.set_xticks(angles[:-1])
-                                    ax.set_xticklabels(labels[:-1], fontsize=10)
+                                    ax.set_xticklabels(labels[:-1], fontsize=9)
                                     ax.set_yticks([20, 40, 60, 80, 100])
                                     ax.set_yticklabels(["20", "40", "60", "80", "100"])
-                                    ax.set_title("KYS Radar Chart", size=14, weight="bold", pad=20)
+                                    ax.set_title("KYS Radar Chart", size=13, weight="bold", pad=10)
 
                                     st.pyplot(fig)
                                 else:
