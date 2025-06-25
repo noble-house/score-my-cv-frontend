@@ -1,8 +1,10 @@
 import streamlit as st
 import requests
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
-# Backend base URL (without /analyze-resume so we can reuse for both endpoints)
+# Backend base URL
 BACKEND_URL = "https://score-my-cv-backend-production.up.railway.app"
 
 st.set_page_config(page_title="ScoreMyCV - AI Resume Strength Checker", layout="wide")
@@ -45,6 +47,32 @@ with tab1:
                         st.markdown("### 🧭 Suggested Job Roles")
                         for r in result["suggested_roles"]:
                             st.info(f"• {r}")
+
+                        # ✅ New Section: Radar Chart for KYS Skills
+                        if "kys_scores" in result and result["kys_scores"]:
+                            st.markdown("### 🧠 Know Your Skills (KYS) – Radar Chart")
+
+                            kys_scores = result["kys_scores"]
+                            labels = list(kys_scores.keys())
+                            scores = list(kys_scores.values())
+
+                            # Radar Chart setup
+                            angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
+                            scores += scores[:1]
+                            angles += angles[:1]
+                            labels += labels[:1]
+
+                            fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+                            ax.plot(angles, scores, color="blue", linewidth=2)
+                            ax.fill(angles, scores, color="skyblue", alpha=0.3)
+                            ax.set_yticks([20, 40, 60, 80, 100])
+                            ax.set_yticklabels(["20", "40", "60", "80", "100"])
+                            ax.set_xticks(angles[:-1])
+                            ax.set_xticklabels(labels[:-1], fontsize=10)
+                            ax.set_title("KYS Radar Chart", size=14, weight="bold", pad=20)
+
+                            st.pyplot(fig)
+
                     else:
                         st.error("❌ Failed to analyze resume. Please try again.")
                 except Exception as e:
