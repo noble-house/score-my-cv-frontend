@@ -48,27 +48,29 @@ with tab1:
                         for r in result["suggested_roles"]:
                             st.info(f"• {r}")
 
-                        # ✅ New Section: Radar Chart for KYS Skills
+                        # ✅ Radar Chart for KYS Skills
                         if "kys_scores" in result and result["kys_scores"]:
-                            st.markdown("### 🧠 Know Your Skills (KYS) – Radar Chart")
-
                             kys_scores = result["kys_scores"]
-                            labels = list(kys_scores.keys())
-                            scores = list(kys_scores.values())
+                            st.markdown("### 🧠 Know Your Skills (KYS) – Radar Chart")
+                            st.json(kys_scores)  # Debug output
 
-                            # Radar Chart setup
+                            labels = list(kys_scores.keys())
+                            scores = [int(kys_scores[k]) for k in labels]
+
+                            # Ensure loop closure for radar chart
+                            labels += [labels[0]]
+                            scores += [scores[0]]
+
                             angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
-                            scores += scores[:1]
                             angles += angles[:1]
-                            labels += labels[:1]
 
                             fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
                             ax.plot(angles, scores, color="blue", linewidth=2)
                             ax.fill(angles, scores, color="skyblue", alpha=0.3)
                             ax.set_yticks([20, 40, 60, 80, 100])
                             ax.set_yticklabels(["20", "40", "60", "80", "100"])
-                            ax.set_xticks(angles[:-1])
-                            ax.set_xticklabels(labels[:-1], fontsize=10)
+                            ax.set_xticks(angles)
+                            ax.set_xticklabels(labels, fontsize=10)
                             ax.set_title("KYS Radar Chart", size=14, weight="bold", pad=20)
 
                             st.pyplot(fig)
