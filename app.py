@@ -31,7 +31,7 @@ with tab1:
                         result = response.json()
 
                         st.subheader("🧪 Raw Response JSON (Debugging Only)")
-                        st.json(result)  # 🔍 Debug: Show full backend response
+                        st.json(result)  # 🔍 Show entire backend response
 
                         st.success(f"🎯 Resume Score: {result['score']} / 100")
 
@@ -54,14 +54,12 @@ with tab1:
                         # ✅ Radar Chart for KYS Skills
                         st.markdown("### 🧠 Know Your Skills (KYS) – Radar Chart")
 
-                        raw_kys = result.get("kys_scores", [])
-                        kys_scores = {}
+                        kys_scores = result.get("kys_scores", {})
 
-                        if isinstance(raw_kys, dict):
-                            kys_scores = raw_kys
-                        elif isinstance(raw_kys, list):
-                            for item in raw_kys:
-                                if ":" in item:
+                        # 🔄 Fallback logic if kys_scores is empty
+                        if not kys_scores and "suggested_roles" in result:
+                            for item in result["suggested_roles"]:
+                                if isinstance(item, str) and ":" in item:
                                     try:
                                         label, score = item.replace("•", "").strip().split(":")
                                         kys_scores[label.strip()] = int(score.strip())
