@@ -31,7 +31,7 @@ with tab1:
                         result = response.json()
 
                         st.subheader("🧪 Raw Response JSON (Debugging Only)")
-                        st.json(result)  # 🔍 Show entire backend response
+                        st.json(result)  # Debug: show raw response
 
                         st.success(f"🎯 Resume Score: {result['score']} / 100")
 
@@ -56,7 +56,7 @@ with tab1:
 
                         kys_scores = result.get("kys_scores", {})
 
-                        # 🔄 Fallback logic if kys_scores is empty
+                        # Fallback: try extracting from suggested_roles if kys_scores is empty
                         if not kys_scores and "suggested_roles" in result:
                             for item in result["suggested_roles"]:
                                 if isinstance(item, str) and ":" in item:
@@ -81,7 +81,7 @@ with tab1:
                                     except Exception as ve:
                                         st.warning(f"⚠️ Skipping invalid KYS entry: {k} -> {v}")
 
-                                if labels and values:
+                                if labels and values and len(labels) == len(values):
                                     labels += [labels[0]]
                                     values += [values[0]]
 
