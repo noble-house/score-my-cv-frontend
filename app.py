@@ -49,11 +49,24 @@ with tab1:
                             st.info(f"• {r}")
 
                         # ✅ Radar Chart for KYS Skills
-                        kys_scores = result.get("kys_scores", {})
                         st.markdown("### 🧠 Know Your Skills (KYS) – Radar Chart")
 
-                        if isinstance(kys_scores, dict) and kys_scores:
-                            st.json(kys_scores)  # Debug: show raw values
+                        raw_kys = result.get("kys_scores", [])
+                        kys_scores = {}
+
+                        if isinstance(raw_kys, dict):
+                            kys_scores = raw_kys
+                        elif isinstance(raw_kys, list):
+                            for item in raw_kys:
+                                if ":" in item:
+                                    try:
+                                        label, score = item.replace("•", "").strip().split(":")
+                                        kys_scores[label.strip()] = int(score.strip())
+                                    except:
+                                        continue
+
+                        if kys_scores:
+                            st.json(kys_scores)  # Optional: Debug raw dict
 
                             try:
                                 labels = []
@@ -67,7 +80,6 @@ with tab1:
                                         st.warning(f"⚠️ Skipping invalid KYS entry: {k} -> {v}")
 
                                 if labels and values:
-                                    # Close the loop
                                     labels += [labels[0]]
                                     values += [values[0]]
 
@@ -86,7 +98,6 @@ with tab1:
                                     st.pyplot(fig)
                                 else:
                                     st.warning("⚠️ No valid KYS values found for plotting.")
-
                             except Exception as e:
                                 st.error(f"Radar chart generation failed: {e}")
                         else:
