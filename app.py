@@ -30,6 +30,9 @@ with tab1:
                     if response.status_code == 200:
                         result = response.json()
 
+                        st.subheader("🧪 Raw Response JSON (Debugging Only)")
+                        st.json(result)  # 🔍 Debug: Show full backend response
+
                         st.success(f"🎯 Resume Score: {result['score']} / 100")
 
                         col1, col2 = st.columns(2)
@@ -66,7 +69,8 @@ with tab1:
                                         continue
 
                         if kys_scores:
-                            st.json(kys_scores)  # Optional: Debug raw dict
+                            st.markdown("#### ✅ Parsed KYS Data")
+                            st.json(kys_scores)
 
                             try:
                                 labels = []
