@@ -49,31 +49,37 @@ with tab1:
                             st.info(f"• {r}")
 
                         # ✅ Radar Chart for KYS Skills
-                        if "kys_scores" in result and result["kys_scores"]:
-                            kys_scores = result["kys_scores"]
-                            st.markdown("### 🧠 Know Your Skills (KYS) – Radar Chart")
-                            st.json(kys_scores)  # Debug output
+                        kys_scores = result.get("kys_scores", {})
+                        st.markdown("### 🧠 Know Your Skills (KYS) – Radar Chart")
 
-                            labels = list(kys_scores.keys())
-                            scores = [int(kys_scores[k]) for k in labels]
+                        if isinstance(kys_scores, dict) and kys_scores:
+                            st.json(kys_scores)  # Debug display
 
-                            # Ensure loop closure for radar chart
-                            labels += [labels[0]]
-                            scores += [scores[0]]
+                            try:
+                                labels = list(kys_scores.keys())
+                                values = [int(kys_scores[k]) for k in labels]
 
-                            angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
-                            angles += angles[:1]
+                                # Complete the loop
+                                labels += [labels[0]]
+                                values += [values[0]]
+                                angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
+                                angles += angles[:1]
 
-                            fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
-                            ax.plot(angles, scores, color="blue", linewidth=2)
-                            ax.fill(angles, scores, color="skyblue", alpha=0.3)
-                            ax.set_yticks([20, 40, 60, 80, 100])
-                            ax.set_yticklabels(["20", "40", "60", "80", "100"])
-                            ax.set_xticks(angles)
-                            ax.set_xticklabels(labels, fontsize=10)
-                            ax.set_title("KYS Radar Chart", size=14, weight="bold", pad=20)
+                                fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+                                ax.plot(angles, values, color="blue", linewidth=2)
+                                ax.fill(angles, values, color="skyblue", alpha=0.3)
+                                ax.set_xticks(angles[:-1])
+                                ax.set_xticklabels(labels[:-1], fontsize=10)
+                                ax.set_yticks([20, 40, 60, 80, 100])
+                                ax.set_yticklabels(["20", "40", "60", "80", "100"])
+                                ax.set_title("KYS Radar Chart", size=14, weight="bold", pad=20)
 
-                            st.pyplot(fig)
+                                st.pyplot(fig)
+
+                            except Exception as e:
+                                st.error(f"Radar chart generation failed: {e}")
+                        else:
+                            st.info("No KYS data available to plot radar chart.")
 
                     else:
                         st.error("❌ Failed to analyze resume. Please try again.")
