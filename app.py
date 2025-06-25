@@ -31,7 +31,7 @@ with tab1:
                         result = response.json()
 
                         st.subheader("🧪 Raw Response JSON (Debugging Only)")
-                        st.json(result)  # Debug: show raw response
+                        st.json(result)
 
                         st.success(f"🎯 Resume Score: {result['score']} / 100")
 
@@ -51,12 +51,12 @@ with tab1:
                         for r in result["suggested_roles"]:
                             st.info(f"• {r}")
 
-                        # ✅ Radar Chart for KYS Skills
+                        # === Radar Chart for KYS Skills ===
                         st.markdown("### 🧠 Know Your Skills (KYS) – Radar Chart")
 
                         kys_scores = result.get("kys_scores", {})
 
-                        # Fallback: try extracting from suggested_roles if kys_scores is empty
+                        # Fallback parsing from suggested_roles if kys_scores is empty
                         if not kys_scores and "suggested_roles" in result:
                             for item in result["suggested_roles"]:
                                 if isinstance(item, str) and ":" in item:
@@ -82,11 +82,12 @@ with tab1:
                                         st.warning(f"⚠️ Skipping invalid KYS entry: {k} -> {v}")
 
                                 if labels and values and len(labels) == len(values):
-                                    labels += [labels[0]]
-                                    values += [values[0]]
-
                                     angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
-                                    angles += angles[:1]
+
+                                    # Close the loop
+                                    labels.append(labels[0])
+                                    values.append(values[0])
+                                    angles.append(angles[0])
 
                                     fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
                                     ax.plot(angles, values, color="blue", linewidth=2)
@@ -104,7 +105,6 @@ with tab1:
                                 st.error(f"Radar chart generation failed: {e}")
                         else:
                             st.info("No KYS data available to plot radar chart.")
-
                     else:
                         st.error("❌ Failed to analyze resume. Please try again.")
                 except Exception as e:
@@ -139,7 +139,6 @@ with tab2:
             st.markdown("### 🧭 Top Suggested Job Roles")
             role_df = pd.DataFrame.from_dict(data["top_roles"], orient="index", columns=["Count"])
             st.dataframe(role_df)
-
         else:
             st.error("❌ Failed to load dashboard data.")
     except Exception as e:
